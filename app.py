@@ -213,17 +213,22 @@ def run_optimization(job_id, file_paths):
     except Exception as e:
         import traceback
         error_details = str(e)
+        full_traceback = traceback.format_exc()
+        
         if "Data validation failed" in error_details:
             # Clean up the error message for display
             error_lines = error_details.split('\n')
             if len(error_lines) > 1:
                 error_details = "Validation errors found:\n" + "\n".join(error_lines[1:])
+        elif "'keyword_text'" in error_details:
+            error_details = f"Keyword processing error: {error_details}\nThis usually means the keyword column is missing or has a different name."
         
         job_status[job_id]['status'] = 'failed'
         job_status[job_id]['message'] = error_details
         job_status[job_id]['error'] = error_details
+        job_status[job_id]['traceback'] = full_traceback
         logger.error(f"Job {job_id} failed: {error_details}")
-        logger.error(f"Traceback: {traceback.format_exc()}")
+        logger.error(f"Traceback: {full_traceback}")
     finally:
         # Clean up uploaded files
         upload_folder = os.path.join(app.config['UPLOAD_FOLDER'], job_id)

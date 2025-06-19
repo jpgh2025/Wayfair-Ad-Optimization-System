@@ -28,11 +28,57 @@ class KeywordExpansionTool:
                            existing_keywords: List[Keyword],
                            campaigns: List[Campaign],
                            keyword_targeting_df: Optional[pd.DataFrame] = None) -> List[KeywordRecommendation]:
-        st_df = pd.DataFrame([vars(st) for st in search_terms])
-        kw_df = pd.DataFrame([vars(kw) for kw in existing_keywords])
-        camp_df = pd.DataFrame([vars(c) for c in campaigns])
+        # Convert to DataFrames safely
+        st_data = []
+        for st in search_terms:
+            if hasattr(st, '__dict__'):
+                st_data.append(vars(st))
+            else:
+                st_data.append({
+                    'search_term': getattr(st, 'search_term', ''),
+                    'keyword_id': getattr(st, 'keyword_id', None),
+                    'campaign_id': getattr(st, 'campaign_id', ''),
+                    'impressions': getattr(st, 'impressions', 0),
+                    'clicks': getattr(st, 'clicks', 0),
+                    'conversions': getattr(st, 'conversions', 0),
+                    'spend': getattr(st, 'spend', 0),
+                    'revenue': getattr(st, 'revenue', 0),
+                    'supplier_share': getattr(st, 'supplier_share', 0),
+                    'roas': getattr(st, 'roas', 0)
+                })
+        st_df = pd.DataFrame(st_data)
         
-        existing_keyword_texts = set(kw_df['keyword_text'].str.lower())
+        kw_data = []
+        for kw in existing_keywords:
+            if hasattr(kw, '__dict__'):
+                kw_data.append(vars(kw))
+            else:
+                kw_data.append({
+                    'keyword_id': getattr(kw, 'keyword_id', ''),
+                    'keyword_text': getattr(kw, 'keyword_text', ''),
+                    'match_type': getattr(kw, 'match_type', 'broad'),
+                    'campaign_id': getattr(kw, 'campaign_id', ''),
+                    'current_bid': getattr(kw, 'current_bid', 0),
+                    'impressions': getattr(kw, 'impressions', 0),
+                    'clicks': getattr(kw, 'clicks', 0),
+                    'conversions': getattr(kw, 'conversions', 0),
+                    'spend': getattr(kw, 'spend', 0),
+                    'revenue': getattr(kw, 'revenue', 0),
+                    'roas': getattr(kw, 'roas', 0),
+                    'ctr': getattr(kw, 'ctr', 0),
+                    'conversion_rate': getattr(kw, 'conversion_rate', 0)
+                })
+        kw_df = pd.DataFrame(kw_data)
+        
+        camp_df = pd.DataFrame([vars(c) if hasattr(c, '__dict__') else {} for c in campaigns])
+        
+        # Handle empty keyword dataframe
+        if len(kw_df) == 0:
+            kw_df = pd.DataFrame(columns=['keyword_id', 'keyword_text', 'match_type', 'campaign_id', 
+                                         'current_bid', 'impressions', 'clicks', 'conversions', 
+                                         'spend', 'revenue', 'roas', 'ctr', 'conversion_rate'])
+        
+        existing_keyword_texts = set(kw_df['keyword_text'].str.lower()) if len(kw_df) > 0 else set()
         
         untargeted_terms = st_df[st_df['keyword_id'].isna()].copy()
         

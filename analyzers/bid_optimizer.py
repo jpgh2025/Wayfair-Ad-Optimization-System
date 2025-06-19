@@ -30,8 +30,29 @@ class BidOptimizationEngine:
         
     def optimize_bids(self, keywords: List[Keyword], campaigns: List[Campaign],
                      products: Optional[List[Product]] = None) -> List[BidRecommendation]:
-        kw_df = pd.DataFrame([vars(k) for k in keywords])
-        camp_df = pd.DataFrame([vars(c) for c in campaigns])
+        # Convert to DataFrames safely
+        kw_data = []
+        for k in keywords:
+            if hasattr(k, '__dict__'):
+                kw_data.append(vars(k))
+            else:
+                kw_data.append({
+                    'keyword_id': getattr(k, 'keyword_id', ''),
+                    'keyword_text': getattr(k, 'keyword_text', ''),
+                    'match_type': getattr(k, 'match_type', 'broad'),
+                    'campaign_id': getattr(k, 'campaign_id', ''),
+                    'current_bid': getattr(k, 'current_bid', 0),
+                    'impressions': getattr(k, 'impressions', 0),
+                    'clicks': getattr(k, 'clicks', 0),
+                    'conversions': getattr(k, 'conversions', 0),
+                    'spend': getattr(k, 'spend', 0),
+                    'revenue': getattr(k, 'revenue', 0),
+                    'roas': getattr(k, 'roas', 0),
+                    'ctr': getattr(k, 'ctr', 0),
+                    'conversion_rate': getattr(k, 'conversion_rate', 0)
+                })
+        kw_df = pd.DataFrame(kw_data)
+        camp_df = pd.DataFrame([vars(c) if hasattr(c, '__dict__') else {} for c in campaigns])
         
         kw_df = pd.merge(kw_df, camp_df[['campaign_id', 'campaign_name']], on='campaign_id', how='left')
         
