@@ -1,0 +1,128 @@
+{% extends "base.html" %}
+
+{% block title %}WSP Optimizer - Results{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h1 class="mb-4">
+            <i class="fas fa-chart-bar text-success"></i> Optimization Results
+        </h1>
+        
+        <!-- Summary Cards -->
+        <div class="row g-4 mb-5">
+            <div class="col-md-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-dollar-sign fa-2x text-primary mb-2"></i>
+                        <h5 class="card-title">Current ROAS</h5>
+                        <h2 class="text-primary">{{ "%.2f"|format(summary.current_state.overall_roas) }}x</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-key fa-2x text-success mb-2"></i>
+                        <h5 class="card-title">New Keywords</h5>
+                        <h2 class="text-success">{{ summary.recommendations_summary.new_keywords }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-chart-line fa-2x text-info mb-2"></i>
+                        <h5 class="card-title">Revenue Impact</h5>
+                        <h2 class="text-info">${{ "{:,.0f}".format(summary.expected_impact.revenue_increase) }}</h2>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card text-center h-100">
+                    <div class="card-body">
+                        <i class="fas fa-piggy-bank fa-2x text-warning mb-2"></i>
+                        <h5 class="card-title">Spend Savings</h5>
+                        <h2 class="text-warning">${{ "{:,.0f}".format(summary.expected_impact.spend_savings) }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Interactive Dashboard -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tachometer-alt"></i> Interactive Dashboard
+                </h5>
+            </div>
+            <div class="card-body">
+                <a href="/dashboard/{{ job_id }}" target="_blank" class="btn btn-primary">
+                    <i class="fas fa-external-link-alt"></i> Open Full Dashboard
+                </a>
+                <p class="text-muted mt-2">View detailed analytics and visualizations</p>
+            </div>
+        </div>
+
+        <!-- Download Files -->
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-download"></i> Download Optimization Files
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for download in downloads %}
+                    <div class="col-md-6 mb-3">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-file-csv fa-2x text-secondary me-3"></i>
+                            <div class="flex-grow-1">
+                                <h6 class="mb-0">{{ download.filename }}</h6>
+                                <small class="text-muted">
+                                    {% if 'keyword' in download.filename %}New keywords to add{% endif %}
+                                    {% if 'bid' in download.filename %}Bid adjustments{% endif %}
+                                    {% if 'negative' in download.filename %}Negative keywords{% endif %}
+                                    {% if 'budget' in download.filename %}Budget changes{% endif %}
+                                    {% if 'master' in download.filename %}All recommendations{% endif %}
+                                </small>
+                            </div>
+                            <a href="{{ download.url }}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-download"></i> Download
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Steps -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-tasks"></i> Next Steps
+                </h5>
+            </div>
+            <div class="card-body">
+                <ol>
+                    <li>Download the optimization files above</li>
+                    <li>Review recommendations in the dashboard</li>
+                    <li>Upload files to Wayfair's bulk edit tool</li>
+                    <li>Monitor performance over the next 7-14 days</li>
+                    <li>Run another optimization in 1-2 weeks</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="/" class="btn btn-lg btn-primary">
+                <i class="fas fa-redo"></i> Run Another Optimization
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

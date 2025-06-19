@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+
+{% block title %}WSP Optimizer - Upload Files{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-body p-5">
+                <h1 class="text-center mb-4">
+                    <i class="fas fa-rocket text-primary"></i>
+                    Optimize Your Wayfair Campaigns
+                </h1>
+                <p class="text-center text-muted mb-5">
+                    Upload your Wayfair reports and get actionable optimization recommendations in minutes
+                </p>
+
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="row g-4">
+                        <div class="col-md-6">
+                            <div class="upload-box">
+                                <label for="campaigns" class="form-label">
+                                    <i class="fas fa-bullhorn"></i> Campaign Performance Report
+                                </label>
+                                <input type="file" class="form-control" id="campaigns" name="campaigns" accept=".csv" required>
+                                <small class="text-muted">Campaign metrics and ROAS data</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="upload-box">
+                                <label for="keywords" class="form-label">
+                                    <i class="fas fa-key"></i> Keyword Optimization Report
+                                </label>
+                                <input type="file" class="form-control" id="keywords" name="keywords" accept=".csv" required>
+                                <small class="text-muted">Keyword performance and bids</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="upload-box">
+                                <label for="search_terms" class="form-label">
+                                    <i class="fas fa-search"></i> Search Term Research Report
+                                </label>
+                                <input type="file" class="form-control" id="search_terms" name="search_terms" accept=".csv" required>
+                                <small class="text-muted">Search query analysis</small>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <div class="upload-box">
+                                <label for="products" class="form-label">
+                                    <i class="fas fa-box"></i> Product Performance Report
+                                </label>
+                                <input type="file" class="form-control" id="products" name="products" accept=".csv" required>
+                                <small class="text-muted">Product-level metrics</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-center mt-5">
+                        <button type="submit" class="btn btn-primary btn-lg px-5" id="submitBtn">
+                            <i class="fas fa-magic"></i> Optimize Now
+                        </button>
+                    </div>
+                </form>
+
+                <div id="uploadProgress" class="mt-4" style="display: none;">
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <p class="text-center mt-2" id="progressMessage">Uploading files...</p>
+                </div>
+
+                <div id="errorAlert" class="alert alert-danger mt-4" style="display: none;"></div>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5><i class="fas fa-lightbulb text-warning"></i> What You'll Get:</h5>
+                <div class="row mt-3">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> New keyword recommendations</li>
+                            <li><i class="fas fa-check text-success"></i> Optimal bid adjustments</li>
+                            <li><i class="fas fa-check text-success"></i> Budget reallocation plan</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Negative keyword list</li>
+                            <li><i class="fas fa-check text-success"></i> Product tier analysis</li>
+                            <li><i class="fas fa-check text-success"></i> Interactive dashboard</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    $('#uploadForm').on('submit', function(e) {
+        e.preventDefault();
+        
+        var formData = new FormData(this);
+        
+        $('#submitBtn').prop('disabled', true);
+        $('#uploadProgress').show();
+        $('#errorAlert').hide();
+        
+        $.ajax({
+            url: '/upload',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                xhr.upload.addEventListener("progress", function(evt) {
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total * 100;
+                        $('.progress-bar').css('width', percentComplete + '%');
+                    }
+                }, false);
+                return xhr;
+            },
+            success: function(response) {
+                $('#progressMessage').text('Files uploaded! Starting optimization...');
+                checkJobStatus(response.job_id);
+            },
+            error: function(xhr) {
+                $('#submitBtn').prop('disabled', false);
+                $('#uploadProgress').hide();
+                $('#errorAlert').text(xhr.responseJSON.error || 'Upload failed').show();
+            }
+        });
+    });
+    
+    function checkJobStatus(jobId) {
+        var checkInterval = setInterval(function() {
+            $.get('/status/' + jobId, function(data) {
+                if (data.status === 'completed') {
+                    clearInterval(checkInterval);
+                    window.location.href = '/results/' + jobId;
+                } else if (data.status === 'failed') {
+                    clearInterval(checkInterval);
+                    $('#submitBtn').prop('disabled', false);
+                    $('#uploadProgress').hide();
+                    $('#errorAlert').text(data.message).show();
+                } else {
+                    $('.progress-bar').css('width', data.progress + '%');
+                    $('#progressMessage').text(data.message);
+                }
+            });
+        }, 2000);
+    }
+});
+</script>
+{% endblock %}

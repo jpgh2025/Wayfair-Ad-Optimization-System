@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block title %}WSP Optimizer - Processing{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="card">
+            <div class="card-body text-center p-5">
+                <div class="spinner-border text-primary mb-4" role="status">
+                    <span class="visually-hidden">Processing...</span>
+                </div>
+                <h2>Processing Your Reports</h2>
+                <p class="text-muted mb-4">This usually takes 1-2 minutes depending on file size</p>
+                
+                <div class="progress mb-3">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                         role="progressbar" 
+                         style="width: 0%"
+                         id="progressBar">
+                    </div>
+                </div>
+                
+                <p id="statusMessage" class="text-muted">Initializing...</p>
+                
+                <div class="mt-4">
+                    <small class="text-muted">
+                        <i class="fas fa-info-circle"></i> 
+                        Don't close this window. You'll be redirected when complete.
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+$(document).ready(function() {
+    var jobId = '{{ job_id }}';
+    
+    function checkStatus() {
+        $.get('/status/' + jobId, function(data) {
+            $('#progressBar').css('width', data.progress + '%');
+            $('#statusMessage').text(data.message);
+            
+            if (data.status === 'completed') {
+                window.location.href = '/results/' + jobId;
+            } else if (data.status === 'failed') {
+                $('#statusMessage').html('<span class="text-danger">' + data.message + '</span>');
+                $('.spinner-border').hide();
+            } else {
+                setTimeout(checkStatus, 2000);
+            }
+        }).fail(function() {
+            setTimeout(checkStatus, 5000);
+        });
+    }
+    
+    checkStatus();
+});
+</script>
+{% endblock %}

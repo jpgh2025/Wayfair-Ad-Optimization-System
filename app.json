@@ -1,0 +1,31 @@
+{
+  "name": "Wayfair Ad Optimization System",
+  "description": "Comprehensive optimization suite for Wayfair Sponsored Products that analyzes advertising performance and provides actionable recommendations",
+  "repository": "https://github.com/jpgh2025/Wayfair-Ad-Optimization-System",
+  "keywords": ["wayfair", "advertising", "optimization", "ecommerce", "python", "flask"],
+  "addons": [],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
+  "env": {
+    "SECRET_KEY": {
+      "description": "Secret key for session management",
+      "generator": "secret"
+    },
+    "FLASK_ENV": {
+      "description": "Flask environment",
+      "value": "production"
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1,
+      "size": "free"
+    }
+  },
+  "scripts": {
+    "postdeploy": "python -c \"import nltk; nltk.download('stopwords')\""
+  }
+}

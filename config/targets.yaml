@@ -1,0 +1,59 @@
+business_targets:
+  overall_roas_target: 3.0
+  revenue_growth_target: 20  # 20% YoY
+  market_share_target: 15  # 15% supplier share
+  
+campaign_targets:
+  brand_campaigns:
+    roas_target: 5.0
+    ctr_target: 5.0
+    conversion_rate_target: 4.0
+  
+  category_campaigns:
+    roas_target: 3.0
+    ctr_target: 2.0
+    conversion_rate_target: 2.0
+  
+  competitor_campaigns:
+    roas_target: 2.0
+    ctr_target: 1.0
+    conversion_rate_target: 1.0
+  
+  generic_campaigns:
+    roas_target: 2.5
+    ctr_target: 1.5
+    conversion_rate_target: 1.5
+  
+product_tier_targets:
+  star_products:
+    budget_allocation: 40  # 40% of total budget
+    bid_premium: 1.2  # 20% higher bids
+    
+  potential_products:
+    budget_allocation: 30
+    bid_premium: 1.15
+    
+  worker_products:
+    budget_allocation: 25
+    bid_premium: 0.9
+    
+  cull_products:
+    budget_allocation: 5
+    bid_premium: 0.7
+    
+optimization_frequency:
+  keyword_expansion: weekly
+  bid_optimization: twice_weekly
+  budget_reallocation: weekly
+  negative_keywords: weekly
+  product_analysis: weekly
+  
+reporting_settings:
+  executive_summary_frequency: weekly
+  detailed_report_frequency: monthly
+  alert_threshold_deviation: 20  # Alert if metrics deviate by 20%
+  
+test_parameters:
+  ab_test_duration_days: 14
+  min_sample_size: 1000
+  confidence_level: 0.95
