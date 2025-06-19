@@ -93,7 +93,7 @@ def upload_files():
         return jsonify({
             'job_id': job_id,
             'message': 'Files uploaded successfully. Optimization started.',
-            'status_url': url_for('job_status', job_id=job_id, _external=True)
+            'status_url': url_for('get_job_status', job_id=job_id, _external=True)
         }), 202
         
     except Exception as e:
@@ -101,7 +101,7 @@ def upload_files():
 
 
 @app.route('/status/<job_id>')
-def job_status(job_id):
+def get_job_status(job_id):
     if job_id not in job_status:
         return jsonify({'error': 'Job not found'}), 404
     
