@@ -1,6 +1,6 @@
 from typing import List, Dict, Any, Tuple
 import pandas as pd
-from .models import Campaign, Keyword, SearchTerm, Product
+from data_ingestion.models import Campaign, Keyword, SearchTerm, Product
 
 
 class DataValidator:

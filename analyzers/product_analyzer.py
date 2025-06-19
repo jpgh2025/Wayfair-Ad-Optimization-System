@@ -3,7 +3,7 @@ import numpy as np
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from enum import Enum
-from ..data_ingestion.models import Product, Campaign, Keyword
+from data_ingestion.models import Product, Campaign, Keyword
 
 
 class ProductTier(Enum):

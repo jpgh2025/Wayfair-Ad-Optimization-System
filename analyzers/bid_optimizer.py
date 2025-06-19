@@ -3,7 +3,7 @@ import numpy as np
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
 from datetime import datetime, timedelta
-from ..data_ingestion.models import Keyword, Campaign, Product
+from data_ingestion.models import Keyword, Campaign, Product
 
 
 @dataclass

@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 from typing import List, Dict, Tuple, Optional
 from dataclasses import dataclass
-from ..data_ingestion.models import Campaign, Keyword, Product
+from data_ingestion.models import Campaign, Keyword, Product
 
 
 @dataclass

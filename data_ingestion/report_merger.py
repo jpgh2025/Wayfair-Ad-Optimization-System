@@ -1,6 +1,6 @@
 import pandas as pd
 from typing import Dict, List, Optional
-from .models import Campaign, Keyword, SearchTerm, Product
+from data_ingestion.models import Campaign, Keyword, SearchTerm, Product
 
 
 class ReportMerger:

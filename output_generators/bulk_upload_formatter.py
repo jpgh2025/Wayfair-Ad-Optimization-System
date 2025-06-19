@@ -2,9 +2,9 @@ import pandas as pd
 from typing import List, Dict, Optional
 from datetime import datetime
 import os
-from ..analyzers.keyword_analyzer import KeywordRecommendation
-from ..analyzers.bid_optimizer import BidRecommendation
-from ..analyzers.negative_keyword_finder import NegativeKeywordRecommendation
+from analyzers.keyword_analyzer import KeywordRecommendation
+from analyzers.bid_optimizer import BidRecommendation
+from analyzers.negative_keyword_finder import NegativeKeywordRecommendation
 
 
 class WayfairBulkUploadFormatter:

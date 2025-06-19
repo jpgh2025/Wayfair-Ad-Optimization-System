@@ -5,7 +5,7 @@ from dataclasses import dataclass
 import re
 import nltk
 from nltk.corpus import stopwords
-from ..data_ingestion.models import SearchTerm, Campaign
+from data_ingestion.models import SearchTerm, Campaign
 
 
 @dataclass
@@ -29,7 +29,12 @@ class NegativeKeywordGenerator:
         self.zero_conversion_clicks_threshold = 50
         
         try:
-            self.stop_words = set(stopwords.words('english'))
+            import nltk
+            try:
+                self.stop_words = set(stopwords.words('english'))
+            except LookupError:
+                nltk.download('stopwords', quiet=True)
+                self.stop_words = set(stopwords.words('english'))
         except:
             self.stop_words = {'the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 
                               'of', 'with', 'by', 'from', 'about', 'as', 'into', 'through'}

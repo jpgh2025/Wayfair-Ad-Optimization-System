@@ -3,7 +3,7 @@ import numpy as np
 from typing import List, Dict, Tuple, Optional
 import re
 from dataclasses import dataclass
-from ..data_ingestion.models import SearchTerm, Keyword, Campaign
+from data_ingestion.models import SearchTerm, Keyword, Campaign
 
 
 @dataclass

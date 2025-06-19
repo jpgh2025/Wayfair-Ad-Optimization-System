@@ -3,7 +3,7 @@ from typing import Dict, List, Optional, Union
 from pathlib import Path
 import re
 from datetime import datetime
-from .models import Campaign, Keyword, SearchTerm, Product
+from data_ingestion.models import Campaign, Keyword, SearchTerm, Product
 
 
 class WayfairReportParser:
