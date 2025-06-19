@@ -211,9 +211,19 @@ def run_optimization(job_id, file_paths):
         job_status[job_id]['results_url'] = url_for('results', job_id=job_id, _external=True)
         
     except Exception as e:
+        import traceback
+        error_details = str(e)
+        if "Data validation failed" in error_details:
+            # Clean up the error message for display
+            error_lines = error_details.split('\n')
+            if len(error_lines) > 1:
+                error_details = "Validation errors found:\n" + "\n".join(error_lines[1:])
+        
         job_status[job_id]['status'] = 'failed'
-        job_status[job_id]['message'] = f'Error: {str(e)}'
-        job_status[job_id]['error'] = str(e)
+        job_status[job_id]['message'] = error_details
+        job_status[job_id]['error'] = error_details
+        logger.error(f"Job {job_id} failed: {error_details}")
+        logger.error(f"Traceback: {traceback.format_exc()}")
     finally:
         # Clean up uploaded files
         upload_folder = os.path.join(app.config['UPLOAD_FOLDER'], job_id)

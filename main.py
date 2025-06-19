@@ -75,13 +75,23 @@ class WSPOptimizer:
             self.validator.validate_cross_references(campaigns, keywords, search_terms)
         ]
         
-        for is_valid, messages in validations:
+        validation_types = [
+            "Campaigns", "Keywords", "Search Terms", "Products", "Cross References"
+        ]
+        
+        all_errors = []
+        for idx, (is_valid, messages) in enumerate(validations):
             if not is_valid:
-                logger.error(f"Validation errors: {messages}")
-                raise ValueError("Data validation failed")
+                logger.error(f"{validation_types[idx]} validation errors: {messages}")
+                all_errors.extend([f"{validation_types[idx]}: {msg}" for msg in messages])
             elif messages:
                 for msg in messages:
-                    logger.warning(msg)
+                    logger.warning(f"{validation_types[idx]} warning: {msg}")
+        
+        if all_errors:
+            error_msg = "Data validation failed:\n" + "\n".join(all_errors)
+            logger.error(error_msg)
+            raise ValueError(error_msg)
         
         # Step 3: Merge data for analysis
         logger.info("Merging data...")

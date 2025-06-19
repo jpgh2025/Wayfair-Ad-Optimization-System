@@ -107,15 +107,17 @@ class DataValidator:
         campaign_ids = {c.campaign_id for c in campaigns}
         keyword_ids = {k.keyword_id for k in keywords}
         
+        # Make cross-reference validation warnings instead of errors
         for keyword in keywords:
             if keyword.campaign_id and keyword.campaign_id not in campaign_ids:
-                errors.append(f"Keyword {keyword.keyword_text} references non-existent campaign: {keyword.campaign_id}")
+                warnings.append(f"Keyword {keyword.keyword_text} references campaign ID not in report: {keyword.campaign_id}")
         
         for st in search_terms:
             if st.campaign_id and st.campaign_id not in campaign_ids:
-                errors.append(f"Search term '{st.search_term}' references non-existent campaign: {st.campaign_id}")
+                warnings.append(f"Search term '{st.search_term}' references campaign ID not in report: {st.campaign_id}")
             
             if st.keyword_id and st.keyword_id not in keyword_ids:
-                warnings.append(f"Search term '{st.search_term}' references non-existent keyword: {st.keyword_id}")
+                warnings.append(f"Search term '{st.search_term}' references keyword ID not in report: {st.keyword_id}")
         
-        return len(errors) == 0, errors + warnings
+        # Only return errors for critical issues
+        return True, warnings
