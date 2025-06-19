@@ -51,6 +51,7 @@ def upload_files():
     try:
         # Check if all required files are present
         required_files = ['campaigns', 'keywords', 'search_terms', 'products']
+        optional_files = ['keyword_targeting']
         
         for file_type in required_files:
             if file_type not in request.files:
@@ -76,6 +77,16 @@ def upload_files():
             filepath = os.path.join(job_folder, f"{file_type}_{filename}")
             file.save(filepath)
             file_paths[file_type] = filepath
+        
+        # Handle optional files
+        for file_type in optional_files:
+            if file_type in request.files and request.files[file_type].filename != '':
+                file = request.files[file_type]
+                if allowed_file(file.filename):
+                    filename = secure_filename(file.filename)
+                    filepath = os.path.join(job_folder, f"{file_type}_{filename}")
+                    file.save(filepath)
+                    file_paths[file_type] = filepath
         
         # Store job information
         job_queue[job_id] = file_paths

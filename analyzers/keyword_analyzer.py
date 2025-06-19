@@ -26,7 +26,8 @@ class KeywordExpansionTool:
         
     def analyze_search_terms(self, search_terms: List[SearchTerm], 
                            existing_keywords: List[Keyword],
-                           campaigns: List[Campaign]) -> List[KeywordRecommendation]:
+                           campaigns: List[Campaign],
+                           keyword_targeting_df: Optional[pd.DataFrame] = None) -> List[KeywordRecommendation]:
         st_df = pd.DataFrame([vars(st) for st in search_terms])
         kw_df = pd.DataFrame([vars(kw) for kw in existing_keywords])
         camp_df = pd.DataFrame([vars(c) for c in campaigns])

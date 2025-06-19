@@ -115,6 +115,15 @@ class WayfairReportParser:
         
         return search_terms
     
+    def parse_keyword_targeting_report(self, file_path: str) -> pd.DataFrame:
+        """Parse the optional keyword targeting report"""
+        df = pd.read_csv(file_path)
+        
+        df.columns = df.columns.str.lower().str.replace(' ', '_')
+        
+        # Return as DataFrame for flexibility in how it's used
+        return df
+    
     def parse_product_performance_report(self, file_path: str) -> List[Product]:
         df = pd.read_csv(file_path)
         

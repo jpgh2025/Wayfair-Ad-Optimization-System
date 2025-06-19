@@ -59,6 +59,12 @@ class WSPOptimizer:
         search_terms = self.parser.parse_search_term_research_report(report_paths['search_terms'])
         products = self.parser.parse_product_performance_report(report_paths['products'])
         
+        # Parse optional keyword targeting report
+        keyword_targeting_df = None
+        if 'keyword_targeting' in report_paths and report_paths['keyword_targeting']:
+            logger.info("Parsing keyword targeting report...")
+            keyword_targeting_df = self.parser.parse_keyword_targeting_report(report_paths['keyword_targeting'])
+        
         # Step 2: Validate data
         logger.info("Validating data...")
         validations = [
@@ -90,7 +96,7 @@ class WSPOptimizer:
             target_roas=self.thresholds['performance_thresholds']['target_roas']
         )
         keyword_recommendations = keyword_tool.analyze_search_terms(
-            search_terms, keywords, campaigns
+            search_terms, keywords, campaigns, keyword_targeting_df
         )
         all_recommendations['keywords'] = keyword_recommendations
         logger.info(f"Generated {len(keyword_recommendations)} keyword recommendations")
