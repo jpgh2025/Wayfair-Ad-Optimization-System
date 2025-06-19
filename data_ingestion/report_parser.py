@@ -119,20 +119,28 @@ class WayfairReportParser:
     def parse_search_term_research_report(self, file_path: str) -> List[SearchTerm]:
         df = pd.read_csv(file_path)
         
-        df.columns = df.columns.str.lower().str.replace(' ', '_')
+        # Normalize column names
+        df.columns = df.columns.str.lower().str.replace(' ', '_').str.replace('-', '_')
         
         search_terms = []
         for _, row in df.iterrows():
+            # Get search term text
+            search_term_text = str(row.get('search_term', row.get('query', row.get('search_query', ''))))
+            
+            # Skip empty search terms
+            if not search_term_text or search_term_text.lower() in ['nan', 'none', '', 'null']:
+                continue
+                
             search_term = SearchTerm(
-                search_term=str(row.get('search_term', row.get('query', ''))),
+                search_term=search_term_text,
                 keyword_id=str(row.get('keyword_id')) if pd.notna(row.get('keyword_id')) else None,
-                campaign_id=str(row.get('campaign_id', '')),
-                impressions=int(row.get('impressions', 0)),
-                clicks=int(row.get('clicks', 0)),
-                conversions=int(row.get('conversions', row.get('orders', 0))),
+                campaign_id=str(row.get('campaign_id', row.get('campaign', ''))),
+                impressions=int(float(str(row.get('impressions', 0)).replace(',', '')) if pd.notna(row.get('impressions')) else 0),
+                clicks=int(float(str(row.get('clicks', 0)).replace(',', '')) if pd.notna(row.get('clicks')) else 0),
+                conversions=int(float(str(row.get('conversions', row.get('orders', 0))).replace(',', '')) if pd.notna(row.get('conversions', row.get('orders'))) else 0),
                 spend=self.clean_currency(row.get('spend', row.get('cost', 0))),
                 revenue=self.clean_currency(row.get('revenue', row.get('sales', 0))),
-                supplier_share=self.clean_percentage(row.get('supplier_share', row.get('share', 0)))
+                supplier_share=self.clean_percentage(row.get('supplier_share', row.get('share', row.get('impression_share', 0))))
             )
             search_terms.append(search_term)
         
